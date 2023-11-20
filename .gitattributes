@@ -1,2 +1,0 @@
-RawData/exp1b/RawEEG/ filter=lfs diff=lfs merge=lfs -text
-RawData_EEG filter=lfs diff=lfs merge=lfs -text
