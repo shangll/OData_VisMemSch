@@ -1,0 +1,138 @@
+Thank you for taking part in this study! In this study, you
+will memorize 1, 2, 4, or 8 images of objects and then
+search a stream of visual displays for any of objects you
+memorized before. Totally, you will perform 8 blocks
+each of which consists of 3 phases:
+
+1) Memorizing phase (to memorize 1, 2, 4, or 8 images of objects)
+2) Testing phase (to comfirm you remember these objects indeed)
+3) Searching phase (to decide on whether the image presented on
+screen is the memorized one)
+
+Please press              , we will show you an example.
+
+
+---------------------------------
+The fishhook comes from memory set. So you need
+to memorize it.
+
+
+
+
+
+
+In formal experiment, it will be presented for 3 sec,
+and then disappears automatically.
+
+But now, you need to press               to continue.
+
+
+---------------------------------
+When you finish memorizing, you will move on testing phase.
+The objects will be presented on screen one by one. You need
+to decide if the object presented is that you just memorized
+lile this:
+
+
+
+
+
+
+
+Please press                 to continue.
+
+
+---------------------------------
+Then, after two testing, we confirm that you have
+remembered them indeed. You are presented a stream
+of displays containing a pair of images.
+
+These pairs should in principle contain an object
+from memory set like this:
+
+
+
+
+
+Press               if the pair of images contains an object
+from memory set. Then you will move on next trial.
+
+
+---------------------------------
+Sometimes, the pair may contain nothing from memory
+set (both are new objects outside memory set) like this:
+
+
+
+
+
+
+
+Press         to continue if there is no any old object
+in the pair.
+
+
+---------------------------------
+Great! Now you can do some practice to know better
+about the experimental procedure.
+
+The practice is much shorter than the real task.
+In real task, you will perform 8 blocks each of which
+contains over 100 image pairs.
+In practice, however, only 20 trials are included in block.
+
+Please press              to continue.
+
+
+---------------------------------
+In both practice and the real task, the image pairs are
+presented very briefly, so you have to stay alert!
+
+We will present the hit rates of both old and
+new pairs at the end of each block.
+
+Try to keep both                    !
+
+Please press              to continue.
+
+
+---------------------------------
+Altogether, in this study, you are required to memorize
+1, 2, 4, or 8 images first                                  , and then
+after at least two             , you will move to                     
+                 in which you need to search a stream of visual
+displays to decide if the pair contains old object or not.
+
+Please press              to continue.
+
+
+---------------------------------
+If there is any object from memory set, press             ;
+if there are no images from memory set, press     .
+
+The images are presented briefly in searching phase.
+But do not worried. You still have enough time to
+respond as quickly and accurately as possible.
+
+
+Ready?
+Please              to practise.
+
+
+
+
+
+
+Now, the formal experiment will start.
+
+Please remember:
+
+1) At both testing phase and searching phase, press               
+if you detect any old object from memory set;
+press        if the objects are outside memory set.
+
+2) At searching phase, do          blink when the images are
+presented. You are only allowed to blink after your response.
+
+Ready?
+Press              to start your experiment!
