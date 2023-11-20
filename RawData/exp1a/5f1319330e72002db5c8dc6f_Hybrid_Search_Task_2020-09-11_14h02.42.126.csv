@@ -1,4 +1,0 @@
-instrResp1.keys,instrResp1.rt,instr1_loop.thisRepN,instr1_loop.thisTrialN,instr1_loop.thisN,instr1_loop.thisIndex,instr1_loop.ran,instrOrd1,participant,age,gender,handedness,date,expName,psychopyVersion,OS,frameRate
-space,14.121,0,0,0,0,1,Instructions/instr1.png,5f1319330e72002db5c8dc6f,30,M,R,2020-09-11_14h02.42.126,Hybrid_Search_Task,2020.2.3,Win32,60
-space,9.207,0,1,1,1,1,Instructions/instr2.png,5f1319330e72002db5c8dc6f,30,M,R,2020-09-11_14h02.42.126,Hybrid_Search_Task,2020.2.3,Win32,60
-space,9.225,0,2,2,2,1,Instructions/instr3.png,5f1319330e72002db5c8dc6f,30,M,R,2020-09-11_14h02.42.126,Hybrid_Search_Task,2020.2.3,Win32,60
