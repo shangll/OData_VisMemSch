@@ -140,15 +140,17 @@ ax[0].legend(h,['Contra','Ipsi','Contra-Ipsi'],
 ax[0].set_title(None)
 ax[0].set_xlabel('Time (sec)')
 ax[0].set_ylabel('μV')
-ax[0].set_ylim(ymin=-4,ymax=12.1)
-y_major_locator = MultipleLocator(4)
+ax[0].set_ylim(ymin=-3,ymax=10.5)
+y_major_locator = MultipleLocator(3)
 ax[0].yaxis.set_major_locator(y_major_locator)
-ax[0].text(-0.275,13.5,'(A)',ha='center',
+ax[0].text(-0.275,10.5,'(A)',ha='center',
            va='top',color='k',fontsize=22)
 # barplot
-sns.barplot(data=df_contr_ipsi[
+plt_bar_data = df_contr_ipsi[
     (df_contr_ipsi['cond'].isin(['wt','bt']))&
-    (df_contr_ipsi['time']<0.3)&(df_contr_ipsi['time']>=0.2)],
+    (df_contr_ipsi['time']<0.3)&(df_contr_ipsi['time']>=0.2)].groupby(
+    ['subj','setsize','cond','loc'])['amp'].agg(np.mean).reset_index()
+sns.barplot(data=plt_bar_data,
             x='setsize',y='amp',hue='loc',hue_order=['contr','ipsi'],
             palette=['tomato','deepskyblue'],saturation=0.75,
             errorbar='se',capsize=0.15,errcolor='grey',
@@ -162,14 +164,15 @@ h,_ = ax[1].get_legend_handles_labels()
 ax[1].legend(h,['Contra','Ipsi'],
              loc='lower left',ncol=1,fontsize=18,
              frameon=True).set_title(None)
-ax[1].text(-0.7,9.75,'(B)',ha='center',
+ax[1].text(-0.7,9.4,'(B)',ha='center',
            va='top',color='k',fontsize=22)
 plt.suptitle('Target-Present Trials')
 sns.despine(offset=15,trim=True)
 fig.tight_layout()
-figName = os.path.join(grpFigPath,'contr_ipsi_targ.png')
+# figName = os.path.join(grpFigPath,'contr_ipsi_targ.png')
+figName = os.path.join(grpFigPath,'contr_ipsi_targ.tif')
 save_fig(fig,figName)
-
+plt.close('all')
 
 
 t = df_sch_n2pc.loc[(df_sch_n2pc['subj']==1)&
@@ -380,11 +383,13 @@ ax[3].legend(h,['T-Dw/1','T-Dw/2','T-Dw/4','T-Dw/8',
              loc='lower left',ncol=2,fontsize=leg_font,
              frameon=False).set_title(None)
 # barplot
-sns.barplot(data=df_n2pc[df_n2pc['cond'].isin(['wt','bt'])],
-            x='setsize',y='n2pc',hue='cond',
+n2pc_plt = df_sch_n2pc_t[df_sch_n2pc_t['cond'].isin(['wt','bt'])].groupby(
+    ['subj','cond','setsize'])['n2pc'].agg(np.mean).reset_index()
+sns.barplot(data=n2pc_plt,
+            x='setsize',y='n2pc',hue='cond',hue_order=['wt','bt'],
             palette=['tomato','deepskyblue'],saturation=0.75,
             errorbar='se',capsize=0.15,errcolor='grey',
-            errwidth=1.5,ax=ax[0])
+            errwidth=1,ax=ax[0])
 ax[0].set_title('Comparison',fontsize=title_font,pad=10)
 ax[0].set_xlabel(xlabel='Memory Set Size')
 ax[0].set_ylabel(ylabel='μV')
@@ -409,12 +414,13 @@ sns.despine(offset=15,trim=True)
 fig.tight_layout()
 # plt.margins(0,0)
 plt.subplots_adjust(hspace=0.65,wspace=0.1)
-figName = os.path.join(grpFigPath,'clst_n2pc.png')
+# figName = os.path.join(grpFigPath,'clst_n2pc.png')
+figName = os.path.join(grpFigPath,'clst_n2pc.tif')
 save_fig(fig,figName)
 #
 
 #
-# barplot for interaction
+# interaction
 fig,ax = plt.subplots(1,1,figsize=(12,9))
 ax = sns.lineplot(data=df_n2pc[(df_n2pc['cond'].isin(['wt','bt']))&
                          (df_n2pc['time']>=grp_start[0])&
@@ -435,16 +441,17 @@ ax.legend(h,['T-Dw','T-Db'],
 sns.despine(offset=15,trim=True)
 fig.tight_layout()
 plt.subplots_adjust(hspace=0.45,wspace=0.15)
-figName = os.path.join(grpFigPath,'clst_inter_barplt.png')
+# figName = os.path.join(grpFigPath,'clst_inter_barplt.png')
+figName = os.path.join(grpFigPath,'clst_inter_barplt.tif')
 save_fig(fig,figName)
 
 # WB
-df_sch_n2pc_wb = df_sch_n2pc[df_sch_n2pc['cond']=='wb']
-df_sch_n2pc_contr = df_sch_n2pc_wb.loc[df_sch_n2pc_wb['cond']=='wb',
+df_sch_n2pc_wb_all = df_sch_n2pc[df_sch_n2pc['cond']=='wb']
+df_sch_n2pc_contr = df_sch_n2pc_wb_all.loc[(df_sch_n2pc_wb_all['cond']=='wb'),
 ['contr','time','subj','setsize','cond']]
 df_sch_n2pc_contr.rename(columns={'contr':'amp'},inplace=True)
 df_sch_n2pc_contr['cond'] = ['contr']*len(df_sch_n2pc_contr)
-df_sch_n2pc_ipsi = df_sch_n2pc_wb.loc[df_sch_n2pc_wb['cond']=='wb',
+df_sch_n2pc_ipsi = df_sch_n2pc_wb_all.loc[df_sch_n2pc_wb_all['cond']=='wb',
 ['ipsi','time','subj','setsize','cond']]
 df_sch_n2pc_ipsi.rename(columns={'ipsi':'amp'},inplace=True)
 df_sch_n2pc_ipsi['cond'] = ['ipsi']*len(df_sch_n2pc_ipsi)
@@ -538,16 +545,12 @@ for c,p in zip(clu,clu_p):
 print(grp_start_cate,grp_end_cate)
 
 # plot
-plt_erp_mean = df_sch_n2pc_wb.groupby(
-    ['subj','time','cond','setsize'])['amp'].agg(np.mean).reset_index()
-plt_erp_mean['type'] = plt_erp_mean['cond'].values+\
-                       plt_erp_mean['setsize'].apply(str).values
 lw_wid = 1.5
 leg_font = 15
 mpl.rcParams.update({'font.size':24})
 fig,ax = plt.subplots(1,2,figsize=(20,9))
 ax = ax.ravel()
-sns.lineplot(data=plt_erp_mean,x='time',y='amp',
+sns.lineplot(data=df_sch_n2pc_wb,x='time',y='amp',
              hue='cond',hue_order=['contr','ipsi'],
              palette=['tomato','deepskyblue'],
              lw=lw_wid,ax=ax[0])
@@ -563,11 +566,11 @@ if grp_start_cate!=[]:
 ax[0].set_xlim(xmin=tmin,xmax=tmax)
 ax[0].set_title('')
 ax[0].set_xlabel(xlabel='Time (sec)')
-x_major_locator = MultipleLocator(0.2)
-ax[0].xaxis.set_major_locator(x_major_locator)
+# x_major_locator = MultipleLocator(0.2)
+# ax[0].xaxis.set_major_locator(x_major_locator)
 ax[0].set_ylabel(ylabel='μV')
-# ax[0].set_ylim(ymin=-2,ymax=11.9)
-y_major_locator = MultipleLocator(2)
+ax[0].set_ylim(ymin=-3,ymax=11.9)
+y_major_locator = MultipleLocator(3)
 ax[0].yaxis.set_major_locator(y_major_locator)
 ax[0].axvline(0,ls='--',color='k')
 ax[0].axhline(0,ls='--',color='k')
@@ -577,10 +580,13 @@ h,_ = ax[0].get_legend_handles_labels()
 ax[0].legend(h,['Contra','Ipsi'],
              loc='lower left',ncol=1,fontsize=leg_font,
              frameon=False).set_title(None)
-ax[0].text(-0.24,13.9,'(A)',ha='center',
+ax[0].text(-0.24,12.2,'(A)',ha='center',
            va='top',color='k',fontsize=22)
 # barplot
-sns.barplot(data=df_n2pc,
+plt_bar_mean = df_sch_n2pc_t.groupby(
+        ['subj','cond','setsize'])['amp'].agg(np.mean).reset_index()
+
+sns.barplot(data=plt_bar_mean,
             x='setsize',y='amp',hue='cond',hue_order=['contr','ipsi'],
             palette=['tomato','deepskyblue'],saturation=0.75,
             errorbar='se',capsize=0.15,errcolor='grey',
@@ -589,278 +595,282 @@ ax[1].set_title('')
 ax[1].set_xlabel(xlabel='Memory Set Size')
 ax[1].set_ylabel(ylabel=None)
 
-# y_major_locator = MultipleLocator(1)
-# ax[1].yaxis.set_major_locator(y_major_locator)
+y_major_locator = MultipleLocator(2)
+ax[1].yaxis.set_major_locator(y_major_locator)
 h,_ = ax[1].get_legend_handles_labels()
 ax[1].legend(h,['Contra','Ipsi'],
              loc='lower left',ncol=1,fontsize=leg_font,
              frameon=True).set_title(None)
-ax[1].text(-0.75,10.05,'(B)',ha='center',
+ax[1].text(-0.75,6.5,'(B)',ha='center',
            va='top',color='k',fontsize=22)
 plt.suptitle('Target-Absent Trials')
 
 sns.despine(offset=15,trim=True)
 fig.tight_layout()
-figName = os.path.join(grpFigPath,'clst_n2pc_wb.png')
+# figName = os.path.join(grpFigPath,'clst_n2pc_wb.png')
+figName = os.path.join(grpFigPath,'clst_n2pc_wb.tif')
 save_fig(fig,figName)
 
 
 
-# ####################################################
-# Decoding
-t_list = np.load(file=os.path.join(
-    decoDataPath_all,'t_list.npy'),allow_pickle=True)
-t_points = len(t_list)
-t0_indx,t1_indx = np.where(t_list>=0.1)[0][0],\
-                  np.where(t_list<=0.4)[0][-1]
-t_indx = t_list[t0_indx:t1_indx]
-
-# barplot
-acc_df = pd.read_csv(
-    os.path.join(resPath,'deco_data_all.csv'),sep=',')
-acc_df_bar = acc_df[acc_df['pred']=='each']
-acc_df_bar['cond'] = acc_df_bar['type'].str[0:2]
-acc_df_bar['setsize'] = acc_df_bar['type'].str[2]
+# # ####################################################
+# # Decoding
+# t_list = np.load(file=os.path.join(
+#     decoDataPath_all,'t_list.npy'),allow_pickle=True)
+# t_points = len(t_list)
+# t0_indx,t1_indx = np.where(t_list>=0.1)[0][0],\
+#                   np.where(t_list<=0.4)[0][-1]
+# t_indx = t_list[t0_indx:t1_indx]
 #
-mpl.rcParams.update({'font.size':24})
-fig,ax = plt.subplots(1,figsize=(12,9))
-sns.barplot(data=acc_df_bar[acc_df_bar['cond'].isin(['wt','bt'])],
-            x='setsize',y='acc',hue='cond',hue_order=['wt','bt'],
-            palette=['crimson','dodgerblue'],saturation=0.75,
-            errorbar='se',capsize=0.15,errcolor='grey',
-            errwidth=1.5,ax=ax)
-ax.set_title('Target-Present Trial Decoding for N2pc')
-ax.set_ylim(ymin=0.5,ymax=0.56)
-ax.set_xlabel(xlabel='Memory Set Size')
-ax.set_ylabel(ylabel='AUC')
-y_major_locator = MultipleLocator(0.02)
-ax.yaxis.set_major_locator(y_major_locator)
-h,_ = ax.get_legend_handles_labels()
-ax.legend(h,['T-Dw','T-Db'],
-             loc='upper right',ncol=1,fontsize=18,
-             frameon=True).set_title(None)
-sns.despine(offset=15,trim=True)
-fig.tight_layout()
-figName = os.path.join(decoFigPath_all,'deco_bar_n2pc.png')
-save_fig(fig,figName)
-
-
-# permutation
-acc_subjAll_cond = np.load(
-    file=os.path.join(resPath,'deco_acc_all.npy'),
-    allow_pickle=True)
-acc_subjAll_cond = acc_subjAll_cond.astype(np.float64)
-acc_mean,acc_sem = dict(),dict()
-for n,label in enumerate(targ_names+wb_names):
-    acc_mean[label] = np.mean(acc_subjAll_cond[n],axis=0)
-    acc_sem[label] = sem(acc_subjAll_cond[n])
-
-def clu_permu_cond(acc_data_all,stat_fun):
-    acc_data = acc_data_all[:,t0_indx:t1_indx]
-    threshold = None
-    f_obs,clu,clu_p,H0 = permutation_cluster_test(
-        acc_data,
-        n_permutations=n_permutations,
-        threshold=threshold,tail=0,
-        stat_fun=stat_fun,n_jobs=None,
-        out_type='indices')
-    print(clu)
-    print(clu_p)
-    acc_sig,grp_sig = find_sig(clu,clu_p)
-    return acc_sig,grp_sig
-def clu_permu_1samp_t(acc_data_all):
-    acc_data = acc_data_all[:,t0_indx:t1_indx]
-    threshold = None
-    tail = 0
-    # degrees_of_freedom = len(acc_data) - 1
-    # threshold = scipy.stats.t.ppf(
-    #     1-p_crit/2,df=degrees_of_freedom)
-    t_obs,clu,clu_p,H0 = permutation_cluster_1samp_test(
-        acc_data-chance_crit,n_permutations=n_permutations,
-        threshold=threshold,tail=tail,
-        out_type='indices',verbose=True)
-    print(clu)
-    print(clu_p)
-    acc_sig,grp_sig = find_sig(clu,clu_p)
-    return acc_sig,grp_sig
-def stat_fun(*args):
-    factor_levels = [2,4]
-    effects = 'A:B'
-    return f_mway_rm(
-        np.array(args).transpose(1,0,2),
-        factor_levels=factor_levels,
-        effects=effects,return_pvals=False)[0]
-acc_sig,sig_grp = clu_permu_cond(
-    acc_subjAll_cond[0:8],
-    stat_fun)
-# category
-def stat_fun_maineff(*args):
-    factor_levels = [2,4]
-    effects = 'A'
-    return f_mway_rm(
-        np.array(args).transpose(1,0,2),
-        factor_levels=factor_levels,
-        effects=effects,return_pvals=False)[0]
-tail = 0
-factor_levels = [2,4]
-effects = 'A'
-f_thresh = f_threshold_mway_rm(
-    subjAllN,factor_levels,effects,p_crit)
-f_obs,clu,clu_p,H0 = permutation_cluster_test(
-    acc_subjAll_cond[0:8],stat_fun=stat_fun_maineff,
-    threshold=f_thresh,
-    tail=tail,n_jobs=None,n_permutations=n_permutations,
-    buffer_size=None,out_type='indices')
-acc_sig,grp_sig = find_sig(clu,clu_p)
-print(clu)
-print(clu_p)
-grp_start_cate,grp_end_cate = [],[]
-for c,p in zip(clu,clu_p):
-    if p<p_crit:
-        grp_start_cate.append(t_list[c[0]][0])
-        grp_end_cate.append(t_list[c[0]][-2])
-print(grp_start_cate,grp_end_cate)
-# setsize
-def stat_fun_maineff(*args):
-    factor_levels = [2,4]
-    effects = 'B'
-    return f_mway_rm(
-        np.array(args).transpose(1,0,2),
-        factor_levels=factor_levels,
-        effects=effects,return_pvals=False)[0]
-tail = 0
-factor_levels = [2,4]
-effects = 'B'
-f_thresh = f_threshold_mway_rm(
-    subjAllN,factor_levels,effects,p_crit)
-f_obs,clu,clu_p,H0 = permutation_cluster_test(
-    acc_subjAll_cond[0:8,:,t0_indx:t1_indx],
-    stat_fun=stat_fun_maineff,
-    threshold=f_thresh,
-    tail=tail,n_jobs=None,n_permutations=n_permutations,
-    buffer_size=None,out_type='indices')
-acc_sig,grp_sig = find_sig(clu,clu_p)
-print(clu)
-print(clu_p)
-grp_start_size,grp_end_size = [],[]
-for c,p in zip(clu,clu_p):
-    if p<p_crit:
-        grp_start_size.append(t_indx[c[0]][0])
-        grp_end_size.append(t_indx[c[0]][-2])
-print(grp_start_size,grp_end_size)
-
+# # barplot
+# acc_df = pd.read_csv(
+#     os.path.join(resPath,'deco_data_all.csv'),sep=',')
+# acc_df_bar = acc_df[acc_df['pred']=='each']
+# acc_df_bar['cond'] = acc_df_bar['type'].str[0:2]
+# acc_df_bar['setsize'] = acc_df_bar['type'].str[2]
+# #
+# mpl.rcParams.update({'font.size':24})
+# fig,ax = plt.subplots(1,figsize=(12,9))
+# sns.barplot(data=acc_df_bar[acc_df_bar['cond'].isin(['wt','bt'])],
+#             x='setsize',y='acc',hue='cond',hue_order=['wt','bt'],
+#             palette=['crimson','dodgerblue'],saturation=0.75,
+#             errorbar='se',capsize=0.15,errcolor='grey',
+#             errwidth=1.5,ax=ax)
+# ax.set_title('Target-Present Trial Decoding for N2pc')
+# ax.set_ylim(ymin=0.5,ymax=0.56)
+# ax.set_xlabel(xlabel='Memory Set Size')
+# ax.set_ylabel(ylabel='AUC')
+# y_major_locator = MultipleLocator(0.02)
+# ax.yaxis.set_major_locator(y_major_locator)
+# h,_ = ax.get_legend_handles_labels()
+# ax.legend(h,['T-Dw','T-Db'],
+#              loc='upper right',ncol=1,fontsize=18,
+#              frameon=True).set_title(None)
+# sns.despine(offset=15,trim=True)
+# fig.tight_layout()
+# # figName = os.path.join(decoFigPath_all,'deco_bar_n2pc.png')
+# figName = os.path.join(decoFigPath_all,'deco_bar_n2pc.tif')
+# save_fig(fig,figName)
 #
-deco_n2pc_plt = deco_n2pc_mean[(deco_n2pc_mean['type'].isin(
-    targ_names))&(deco_n2pc_mean['pred']=='each')]
-# plot each condition
-mpl.rcParams.update({'font.size':20})
-clr = ['crimson','deepskyblue']
-fig, ax = plt.subplots(
-    2,4,sharex=True,sharey=True,figsize=(20,16))
-ax = ax.ravel()
-plt_labels = ['within/1','within/2','within/4','within/8',
-              'between/1','between/2','between/4','between/8']
-for indx,label in enumerate(['wt1','wt2','wt4','wt8',
-                             'bt1','bt2','bt4','bt8']):
-    y = deco_n2pc_plt.loc[deco_n2pc_plt['type']==label,'acc']
-    ax[indx].axhline(0.5,color='k',linestyle='--')
-    ax[indx].axvline(0.0,color='k',linestyle=':')
-    ax[indx].plot(t_list,y,
-                  color='crimson',linestyle='-',
-                  linewidth=lw_wid,label=plt_labels[indx])
-    ymax = 0.75
-    ymin_show = 0.48
-    sig_df = deco_n2pc_plt[deco_n2pc_plt['type']==label]
-    for k in set(sig_df['grp_label']):
-        if k > 0:
-            sig_times = sig_df.loc[
-                (sig_df['grp_label']==k) &
-                (sig_df['type']==label),'time']
-            ax[indx].plot(sig_times,[ymin_show]*len(sig_times),
-                          color='crimson',linewidth=lw_wid)
-            print(sig_times)
-
-    ax[indx].fill_between(t_list,
-                          acc_mean[label]-acc_sem[label],
-                          acc_mean[label]+acc_sem[label],
-                          color='crimson',alpha=0.1,
-                          edgecolor='none')
-    ax[indx].set_yticks(np.arange(0.45,0.8,0.1))
-    ax[indx].set_title(plt_labels[indx])
-fig.text(0.5,-0.04,'Time (sec)',ha='center')
-fig.text(0,0.5,'AUC',va='center',rotation='vertical')
-
-sns.despine(offset=15,trim=True)
-plt.tight_layout()
-title = 'deco_each_cond.png'
-save_fig(fig,os.path.join(decoFigPath_all,title))
-
 #
-# plot main eff
-mpl.rcParams.update({'font.size':20})
-clr = ['crimson','deepskyblue']
-fig, ax = plt.subplots(
-    1,2,sharex=True,sharey=True,figsize=(20,16))
-ax = ax.ravel()
-# category
-deco_n2pc_plt = acc_df[(acc_df['type'].isin(
-    ['wt','bt']))&(acc_df['pred']=='cate')]
-ax[0].axhline(0.5,color='k',linestyle='--')
-ax[0].axvline(0.0,color='k',linestyle=':')
-sns.lineplot(data=deco_n2pc_plt,x='time',y='acc',
-             hue='type',hue_order=['wt','bt'],
-             palette=['crimson','dodgerblue'],
-             lw=lw_wid,ax=ax[0])
-ymin,ymax = ax[0].get_ylim()
-# for label in targ_names:
-#     ax[0].fill_between(t_list,
-#                        acc_mean[label]-acc_sem[label],
-#                        acc_mean[label]+acc_sem[label],
-#                        color='crimson',alpha=0.1,
-#                        edgecolor='none')
-if grp_start_cate!=[]:
-    ax[0].fill_between(
-        t,ymin,ymax,
-        where=(t>=grp_start_cate[0])&(t<grp_end_cate[0]),
-        color='grey',alpha=0.1)
-    ax[0].text(0.05,0.6,'%.3f-%.3f sec'%(
-        grp_start_cate[0],grp_end_cate[0]),color='grey',
-               fontsize=leg_font)
-ax[0].set_title('Main Effect of Category')
-ax[0].set_xlabel(xlabel=None)
-ax[0].set_ylabel(ylabel='AUC')
-h,_ = ax[0].get_legend_handles_labels()
-ax[0].legend(h,['WT','BT'],
-             loc='upper right',ncol=1,fontsize=18,
-             frameon=True).set_title(None)
-# setsize
-deco_n2pc_plt = acc_df[(acc_df['pred']=='size')]
-clrs_all_b = sns.color_palette('Blues',n_colors=35)
-clrs_all = sns.color_palette('GnBu_d')
-clrs = [clrs_all_b[28],clrs_all_b[20],clrs_all[2],clrs_all[0]]
-ax[1].axhline(0.5,color='k',linestyle='--')
-ax[1].axvline(0.0,color='k',linestyle=':')
-sns.lineplot(data=deco_n2pc_plt,x='time',y='acc',
-             hue='type',hue_order=['1','2','4','8'],
-             palette=clrs,
-             lw=lw_wid,ax=ax[1])
-ymin,ymax = ax[1].get_ylim()
-if grp_start_size!=[]:
-    ax[1].fill_between(
-        t,ymin,ymax,
-        where=(t>=grp_start_size[0])&(t<grp_end_size[0]),
-        color='grey',alpha=0.1)
-    ax[1].text(0.05,0.6,'%.3f-%.3f sec'%(
-        grp_start_size[0],grp_end_size[0]),color='grey',
-               fontsize=leg_font)
-ax[1].set_title('Main Effect of Memory Set Size')
-ax[1].set_xlabel(xlabel=None)
-ax[1].set_ylabel(ylabel='AUC')
-h,_ = ax[1].get_legend_handles_labels()
-ax[1].legend(h,['MSS 1','MSS 2','MSS 4','MSS 8'],
-             loc='upper right',ncol=1,fontsize=18,
-             frameon=True).set_title(None)
-sns.despine(offset=15,trim=True)
-plt.tight_layout()
-title = 'deco_n2pc_main_eff.png'
-save_fig(fig,os.path.join(decoFigPath_all,title))
+# # permutation
+# acc_subjAll_cond = np.load(
+#     file=os.path.join(resPath,'deco_acc_all.npy'),
+#     allow_pickle=True)
+# acc_subjAll_cond = acc_subjAll_cond.astype(np.float64)
+# acc_mean,acc_sem = dict(),dict()
+# for n,label in enumerate(targ_names+wb_names):
+#     acc_mean[label] = np.mean(acc_subjAll_cond[n],axis=0)
+#     acc_sem[label] = sem(acc_subjAll_cond[n])
+#
+# def clu_permu_cond(acc_data_all,stat_fun):
+#     acc_data = acc_data_all[:,t0_indx:t1_indx]
+#     threshold = None
+#     f_obs,clu,clu_p,H0 = permutation_cluster_test(
+#         acc_data,
+#         n_permutations=n_permutations,
+#         threshold=threshold,tail=0,
+#         stat_fun=stat_fun,n_jobs=None,
+#         out_type='indices')
+#     print(clu)
+#     print(clu_p)
+#     acc_sig,grp_sig = find_sig(clu,clu_p)
+#     return acc_sig,grp_sig
+# def clu_permu_1samp_t(acc_data_all):
+#     acc_data = acc_data_all[:,t0_indx:t1_indx]
+#     threshold = None
+#     tail = 0
+#     # degrees_of_freedom = len(acc_data) - 1
+#     # threshold = scipy.stats.t.ppf(
+#     #     1-p_crit/2,df=degrees_of_freedom)
+#     t_obs,clu,clu_p,H0 = permutation_cluster_1samp_test(
+#         acc_data-chance_crit,n_permutations=n_permutations,
+#         threshold=threshold,tail=tail,
+#         out_type='indices',verbose=True)
+#     print(clu)
+#     print(clu_p)
+#     acc_sig,grp_sig = find_sig(clu,clu_p)
+#     return acc_sig,grp_sig
+# def stat_fun(*args):
+#     factor_levels = [2,4]
+#     effects = 'A:B'
+#     return f_mway_rm(
+#         np.array(args).transpose(1,0,2),
+#         factor_levels=factor_levels,
+#         effects=effects,return_pvals=False)[0]
+# acc_sig,sig_grp = clu_permu_cond(
+#     acc_subjAll_cond[0:8],
+#     stat_fun)
+# # category
+# def stat_fun_maineff(*args):
+#     factor_levels = [2,4]
+#     effects = 'A'
+#     return f_mway_rm(
+#         np.array(args).transpose(1,0,2),
+#         factor_levels=factor_levels,
+#         effects=effects,return_pvals=False)[0]
+# tail = 0
+# factor_levels = [2,4]
+# effects = 'A'
+# f_thresh = f_threshold_mway_rm(
+#     subjAllN,factor_levels,effects,p_crit)
+# f_obs,clu,clu_p,H0 = permutation_cluster_test(
+#     acc_subjAll_cond[0:8],stat_fun=stat_fun_maineff,
+#     threshold=f_thresh,
+#     tail=tail,n_jobs=None,n_permutations=n_permutations,
+#     buffer_size=None,out_type='indices')
+# acc_sig,grp_sig = find_sig(clu,clu_p)
+# print(clu)
+# print(clu_p)
+# grp_start_cate,grp_end_cate = [],[]
+# for c,p in zip(clu,clu_p):
+#     if p<p_crit:
+#         grp_start_cate.append(t_list[c[0]][0])
+#         grp_end_cate.append(t_list[c[0]][-2])
+# print(grp_start_cate,grp_end_cate)
+# # setsize
+# def stat_fun_maineff(*args):
+#     factor_levels = [2,4]
+#     effects = 'B'
+#     return f_mway_rm(
+#         np.array(args).transpose(1,0,2),
+#         factor_levels=factor_levels,
+#         effects=effects,return_pvals=False)[0]
+# tail = 0
+# factor_levels = [2,4]
+# effects = 'B'
+# f_thresh = f_threshold_mway_rm(
+#     subjAllN,factor_levels,effects,p_crit)
+# f_obs,clu,clu_p,H0 = permutation_cluster_test(
+#     acc_subjAll_cond[0:8,:,t0_indx:t1_indx],
+#     stat_fun=stat_fun_maineff,
+#     threshold=f_thresh,
+#     tail=tail,n_jobs=None,n_permutations=n_permutations,
+#     buffer_size=None,out_type='indices')
+# acc_sig,grp_sig = find_sig(clu,clu_p)
+# print(clu)
+# print(clu_p)
+# grp_start_size,grp_end_size = [],[]
+# for c,p in zip(clu,clu_p):
+#     if p<p_crit:
+#         grp_start_size.append(t_indx[c[0]][0])
+#         grp_end_size.append(t_indx[c[0]][-2])
+# print(grp_start_size,grp_end_size)
+#
+# #
+# deco_n2pc_plt = deco_n2pc_mean[(deco_n2pc_mean['type'].isin(
+#     targ_names))&(deco_n2pc_mean['pred']=='each')]
+# # plot each condition
+# mpl.rcParams.update({'font.size':20})
+# clr = ['crimson','deepskyblue']
+# fig, ax = plt.subplots(
+#     2,4,sharex=True,sharey=True,figsize=(20,16))
+# ax = ax.ravel()
+# plt_labels = ['within/1','within/2','within/4','within/8',
+#               'between/1','between/2','between/4','between/8']
+# for indx,label in enumerate(['wt1','wt2','wt4','wt8',
+#                              'bt1','bt2','bt4','bt8']):
+#     y = deco_n2pc_plt.loc[deco_n2pc_plt['type']==label,'acc']
+#     ax[indx].axhline(0.5,color='k',linestyle='--')
+#     ax[indx].axvline(0.0,color='k',linestyle=':')
+#     ax[indx].plot(t_list,y,
+#                   color='crimson',linestyle='-',
+#                   linewidth=lw_wid,label=plt_labels[indx])
+#     ymax = 0.75
+#     ymin_show = 0.48
+#     sig_df = deco_n2pc_plt[deco_n2pc_plt['type']==label]
+#     for k in set(sig_df['grp_label']):
+#         if k > 0:
+#             sig_times = sig_df.loc[
+#                 (sig_df['grp_label']==k) &
+#                 (sig_df['type']==label),'time']
+#             ax[indx].plot(sig_times,[ymin_show]*len(sig_times),
+#                           color='crimson',linewidth=lw_wid)
+#             print(sig_times)
+#
+#     ax[indx].fill_between(t_list,
+#                           acc_mean[label]-acc_sem[label],
+#                           acc_mean[label]+acc_sem[label],
+#                           color='crimson',alpha=0.1,
+#                           edgecolor='none')
+#     ax[indx].set_yticks(np.arange(0.45,0.8,0.1))
+#     ax[indx].set_title(plt_labels[indx])
+# fig.text(0.5,-0.04,'Time (sec)',ha='center')
+# fig.text(0,0.5,'AUC',va='center',rotation='vertical')
+#
+# sns.despine(offset=15,trim=True)
+# plt.tight_layout()
+# # title = 'deco_each_cond.png'
+# title = 'deco_each_cond.tif'
+# save_fig(fig,os.path.join(decoFigPath_all,title))
+#
+# #
+# # plot main eff
+# mpl.rcParams.update({'font.size':20})
+# clr = ['crimson','deepskyblue']
+# fig, ax = plt.subplots(
+#     1,2,sharex=True,sharey=True,figsize=(20,16))
+# ax = ax.ravel()
+# # category
+# deco_n2pc_plt = acc_df[(acc_df['type'].isin(
+#     ['wt','bt']))&(acc_df['pred']=='cate')]
+# ax[0].axhline(0.5,color='k',linestyle='--')
+# ax[0].axvline(0.0,color='k',linestyle=':')
+# sns.lineplot(data=deco_n2pc_plt,x='time',y='acc',
+#              hue='type',hue_order=['wt','bt'],
+#              palette=['crimson','dodgerblue'],
+#              lw=lw_wid,ax=ax[0])
+# ymin,ymax = ax[0].get_ylim()
+# # for label in targ_names:
+# #     ax[0].fill_between(t_list,
+# #                        acc_mean[label]-acc_sem[label],
+# #                        acc_mean[label]+acc_sem[label],
+# #                        color='crimson',alpha=0.1,
+# #                        edgecolor='none')
+# if grp_start_cate!=[]:
+#     ax[0].fill_between(
+#         t,ymin,ymax,
+#         where=(t>=grp_start_cate[0])&(t<grp_end_cate[0]),
+#         color='grey',alpha=0.1)
+#     ax[0].text(0.05,0.6,'%.3f-%.3f sec'%(
+#         grp_start_cate[0],grp_end_cate[0]),color='grey',
+#                fontsize=leg_font)
+# ax[0].set_title('Main Effect of Category')
+# ax[0].set_xlabel(xlabel=None)
+# ax[0].set_ylabel(ylabel='AUC')
+# h,_ = ax[0].get_legend_handles_labels()
+# ax[0].legend(h,['WT','BT'],
+#              loc='upper right',ncol=1,fontsize=18,
+#              frameon=True).set_title(None)
+# # setsize
+# deco_n2pc_plt = acc_df[(acc_df['pred']=='size')]
+# clrs_all_b = sns.color_palette('Blues',n_colors=35)
+# clrs_all = sns.color_palette('GnBu_d')
+# clrs = [clrs_all_b[28],clrs_all_b[20],clrs_all[2],clrs_all[0]]
+# ax[1].axhline(0.5,color='k',linestyle='--')
+# ax[1].axvline(0.0,color='k',linestyle=':')
+# sns.lineplot(data=deco_n2pc_plt,x='time',y='acc',
+#              hue='type',hue_order=['1','2','4','8'],
+#              palette=clrs,
+#              lw=lw_wid,ax=ax[1])
+# ymin,ymax = ax[1].get_ylim()
+# if grp_start_size!=[]:
+#     ax[1].fill_between(
+#         t,ymin,ymax,
+#         where=(t>=grp_start_size[0])&(t<grp_end_size[0]),
+#         color='grey',alpha=0.1)
+#     ax[1].text(0.05,0.6,'%.3f-%.3f sec'%(
+#         grp_start_size[0],grp_end_size[0]),color='grey',
+#                fontsize=leg_font)
+# ax[1].set_title('Main Effect of Memory Set Size')
+# ax[1].set_xlabel(xlabel=None)
+# ax[1].set_ylabel(ylabel='AUC')
+# h,_ = ax[1].get_legend_handles_labels()
+# ax[1].legend(h,['MSS 1','MSS 2','MSS 4','MSS 8'],
+#              loc='upper right',ncol=1,fontsize=18,
+#              frameon=True).set_title(None)
+# sns.despine(offset=15,trim=True)
+# plt.tight_layout()
+# # title = 'deco_n2pc_main_eff.png'
+# title = 'deco_n2pc_main_eff.tif'
+# save_fig(fig,os.path.join(decoFigPath_all,title))
