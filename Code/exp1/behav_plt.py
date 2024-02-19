@@ -78,7 +78,13 @@ for exp_tag in exp_tag_list:
 
 exp_all = os.path.join(expResPath,'data_allExp.csv')
 data_all = pd.read_csv(exp_all,sep=',')
-exp_data = data_all[(data_all['exp']=='exp1a')|(data_all['exp']=='exp3')]
+exp_data_1a = data_all[(data_all['exp']=='exp1a')].groupby(
+        ['subj','cond','setsize'])['rt'].agg(np.mean).reset_index()
+exp_data_1a['exp'] = 'exp1a'
+exp_data_3 = data_all[(data_all['exp']=='exp3')].groupby(
+        ['subj','cond','setsize'])['rt'].agg(np.mean).reset_index()
+exp_data_3['exp'] = 'exp3'
+exp_data = pd.concat([exp_data_1a,exp_data_3],axis=0,ignore_index=True)
 
 #
 # barplot for mean RT
@@ -170,5 +176,7 @@ ax[2].set_ylabel('RT (sec)')
 sns.despine(offset=15,trim=True)
 plt.tight_layout()
 
-figName = os.path.join(figPath,'behav_descr_fit')
+figName = os.path.join(figPath,'behav_descr_fit.tif')
 save_fig(fig,figName)
+plt.show(block=True)
+plt.close('all')
