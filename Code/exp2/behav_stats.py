@@ -127,9 +127,9 @@ out_subjs_acc = list(set(
 print('ourliers (ACC):',out_subjs_acc)
 acc_check_cond = df_sch_mean.groupby(
     ['Subject','setsize','cond'])['Correct'].agg(np.mean).reset_index()
-print(list(set(
-    acc_check_cond.loc[acc_check_cond['Correct']<crit_acc,
-    ['Subject','cond','setsize','Correct']].tolist())))
+# print(list(set(
+#     acc_check_cond.loc[acc_check_cond['Correct']<crit_acc,
+#     ['Subject','cond','setsize','Correct']].tolist())))
 # # ±3 sd
 # outRTs_mean = df_sch_mean.groupby(
 #     ['cond','setsize'])['RT'].transform(
@@ -144,37 +144,39 @@ print(list(set(
 
 
 
-
-# --- --- --- 3. Descriptive Statistic --- --- ---
-
-# ACC & RT
-for y in ['Correct','RT']:
-    fig = plt.figure(figsize=(12,8))
-    # sns.set_style("whitegrid")
-    sns.violinplot(x='setsize',y=y,data=df_sch_mean,
-                   hue='cond',palette='Set2',inner='quartile',
-                   hue_order=cond_list,saturation=0.75)
-    sns.stripplot(x='setsize',y=y,data=df_sch_mean,
-                  hue='cond',dodge=True,palette='Set2',
-                  hue_order=cond_list)
-    plt.grid(linestyle=':')
-    if y=='Correct':
-        ymin,ymax = 0.5,1.2
-    else:
-        ymin,ymax = 0.2,1.5
-    plt.ylim(ymin,ymax)
-    plt.legend(loc='best',ncol=4,fontsize=10)
-    figName = os.path.join(figPath,'descr_%s')%(y)
-    save_fig(fig,figName)
-
 #
-fig = plt.figure(figsize=(12,8))
-sns.lineplot(data=df_sch_mean,x='setsize',y='RT',hue='cond',
-             style='cond',markers=True,
-             errorbar=('se',0),palette='Set2')
-plt.grid(linestyle=':')
-figName = os.path.join(figPath,'descr_rt_line')
-save_fig(fig,figName)
+# # --- --- --- 3. Descriptive Statistic --- --- ---
+#
+# # ACC & RT
+# for y in ['Correct','RT']:
+#     fig = plt.figure(figsize=(12,8))
+#     # sns.set_style("whitegrid")
+#     sns.violinplot(x='setsize',y=y,data=df_sch_mean,
+#                    hue='cond',palette='Set2',inner='quartile',
+#                    hue_order=cond_list,saturation=0.75)
+#     sns.stripplot(x='setsize',y=y,data=df_sch_mean,
+#                   hue='cond',dodge=True,palette='Set2',
+#                   hue_order=cond_list)
+#     plt.grid(linestyle=':')
+#     if y=='Correct':
+#         ymin,ymax = 0.5,1.2
+#     else:
+#         ymin,ymax = 0.2,1.5
+#     plt.ylim(ymin,ymax)
+#     plt.legend(loc='best',ncol=4,fontsize=10)
+#     figName = os.path.join(figPath,'descr_%s.tif')%(y)
+#     # save_fig(fig,figName)
+#     fig.savefig(figName,dpi=300)
+#
+# #
+# fig = plt.figure(figsize=(12,8))
+# sns.lineplot(data=df_sch_mean,x='setsize',y='RT',hue='cond',
+#              style='cond',markers=True,
+#              errorbar=('se',0),palette='Set2')
+# plt.grid(linestyle=':')
+# figName = os.path.join(figPath,'descr_rt_line.tif')
+# # save_fig(fig,figName)
+# fig.savefig(figName,dpi=300)
 
 # mean data
 mean_data = df_sch_del.groupby(
@@ -192,6 +194,8 @@ print('')
 
 #
 # barplot for mean RT
+mean_data_subj = df_sch_del.groupby(
+    ['Subject','setsize','cond'])[['RT','Correct']].agg(np.mean).reset_index()
 mpl.rcParams.update({'font.size':26})
 plt_size = 26
 fig,ax = plt.subplots(1,2,figsize=(18,9),sharex=True,sharey=True)
@@ -201,7 +205,7 @@ x = -0.75
 y = 0.82
 sub_title = 'Target-Present Trials'
 fig_lab = '(A)'
-sns.barplot(data=df_sch_del[df_sch_del['cond'].isin(['wt','bt'])],
+sns.barplot(data=mean_data_subj[mean_data_subj['cond'].isin(['wt','bt'])],
             x='setsize',y='RT',hue='cond',hue_order=['wt','bt'],
             palette=['tomato','deepskyblue'],saturation=0.75,width=0.55,
             errorbar='se',capsize=0.15,errcolor='grey',
@@ -220,7 +224,7 @@ ax[0].legend(h,['T-Dw','T-Db'],loc='upper left',ncol=1,fontsize=20,
 
 sub_title = 'Target-Absent Trials'
 fig_lab = '(B)'
-sns.barplot(data=df_sch_del[df_sch_del['cond'].isin(['wb','ww','bb'])],
+sns.barplot(data=mean_data_subj[mean_data_subj['cond'].isin(['wb','ww','bb'])],
             x='setsize',y='RT',hue='cond',hue_order=['wb','ww','bb'],
             palette=['lightgrey','gold','mediumseagreen'],
             saturation=0.75,
@@ -240,8 +244,10 @@ ax[1].legend(h,['Dw-Db','Dw-Dw','Db-Db'],loc='upper left',
 sns.despine(offset=15,trim=True)
 plt.tight_layout()
 
-figName = os.path.join(figPath,'behav_descr_bar')
-save_fig(fig,figName)
+figName = os.path.join(figPath,'behav_descr_bar.tif')
+# save_fig(fig,figName)
+fig.savefig(figName)
+plt.close('all')
 
 # #
 # # barplot for mean RT
